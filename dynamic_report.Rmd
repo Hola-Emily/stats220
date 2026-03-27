@@ -1,0 +1,169 @@
+---
+title: Emily's Dynamic Report 🪩
+output: html_fragment
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, error=FALSE)
+
+library(tidyverse)
+
+#🛑 Scientific notations 
+options(scipen=999)
+
+```
+
+```{css}
+
+h2 {
+padding: 10px; 
+background-color:#ffe6ff;
+}
+
+body {
+  font-family: "Playfair Display", serif;
+  font-size: 20 px;
+  font-weight: <weight>;
+  font-style: normal;
+  background-color: #ffffcc
+      }
+```
+
+## A 'Study' about Study Breaks 🍫
+
+**What is the subject being observed?**
+
+Well, a huge clue is in the heading! This dynamic report tracks the study breaks taken by university students. As a part of the Google form, participants were asked to answer the following questions:
+
+1.  What time of day was the break was taken;
+2.  The main reason for taking the break i.e. exhaustion, hunger, routine;
+3.  The duration of the study break;
+4.  If the participant used an electronic device / did a physical activity / eat or drank during the break; and
+5.  How ✨refreshed✨ they felt afterwards.
+
+**Look at me to see some of the responses**
+
+```{r, echo = F}
+
+#importing the data into R & creating a data frame 
+
+form_url <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-4ALIuD7LTPFVJz39UB452ycH7GKS6wy3dkNK_x0hdQb_frktGseG3iuOk_9-MVwaZBYYMmLjKIMp/pub?output=csv"
+
+logged_data <- read_csv(form_url) 
+
+print(logged_data) 
+
+#renaming the variables & creating a new data frame
+latest_data <- logged_data %>%
+  rename(time_of_day = 2, 
+         study_time = 3, 
+         reason = 4, 
+         break_duration = 5, 
+         device_use = 6, 
+         physical_activity = 7,
+         food_or_drink = 8, 
+         extent_of_refreshment = 9) 
+```
+
+`r nrow(logged_data)` participants responded to this survey at this very moment. However, if you come back to it later, something *dynamic* might happen 👀
+
+## What activity will make one feel more refreshed?
+
+Well, let's see below.
+
+```{r, echo=F, fig.width = 6.6, fig.height=4}
+
+  ggplot(latest_data) +
+    geom_bar(aes(x = extent_of_refreshment, fill = device_use)) + 
+    theme_minimal() + 
+    labs(title = "Device use & Extent of Refreshment", 
+         subtitle = "From participants of Emily & Mimi's survey")
+    
+  
+  ggplot(latest_data) +
+    geom_bar(aes(x = extent_of_refreshment, fill = physical_activity)) + 
+    theme_classic() + 
+    labs(title = "Physical activity & Extent of Refreshment", 
+         subtitle = "From participants of Emily & Mimi's survey")
+  
+  ggplot(latest_data) +
+    geom_bar(aes(x = extent_of_refreshment, fill = food_or_drink)) + 
+    theme_get() + 
+    labs(title = "Food / Drink consumption & Extent of Refreshment", 
+         subtitle = "From participants of Emily & Mimi's survey")
+```
+
+## Some dynamic comments
+
+**What are the most popular activities on study break?**
+
+```{r}
+
+device_yes_count <- latest_data %>%
+    filter(device_use == "Yes") %>%
+    nrow()
+  
+  device_yes_percentage <- round((device_yes_count / nrow(latest_data)) * 100, 1)
+
+  
+paste0("So ",device_yes_percentage, "% of the participants used a device on break.")
+
+
+ #What % of people did some sort of physical activity? 
+  
+  activity_yes_count <- latest_data %>%
+    filter(physical_activity == "Yes") %>%
+    nrow()
+
+  
+  activity_yes_percentage <- round((activity_yes_count / nrow(latest_data)) * 100, 1)
+  
+paste0("And ",activity_yes_percentage, "% of the participants did some kind of physical activity (ie walk, chores).")
+
+ #What % of people had food or drinks?
+  food_yes_count <- latest_data %>%
+    filter(food_or_drink == "Yes") %>%
+    nrow()
+  
+  activity_yes_percentage <- round((food_yes_count / nrow(latest_data)) * 100, 1)
+  
+paste0("Last but not least, ",activity_yes_percentage, "% of the participants consumed food / drink.")
+
+```
+
+**You may still be wondering, what activity makes people feel the most refreshed...**
+
+If you want the answer, then I shall provide
+
+```{r, echo = F}
+  
+  #average feeling of refreshment if someone used devices
+  average_device_refreshment_ <- latest_data %>%
+    filter(device_use == "Yes") %>%
+    summarise(average_device_refreshment_ = mean(extent_of_refreshment, na.rm = TRUE))
+
+  #average feeling of refreshment if physical activity was completed 
+  mean_physical_activity_refreshment <- latest_data %>%
+    filter(physical_activity == "Yes") %>%
+    summarise(mean_physical_activity_refreshment = mean(extent_of_refreshment, na.rm = TRUE))
+  
+  #average feeling of refreshment if consumed food / drink 
+  mean_consumption_refreshment <-  latest_data %>%
+    filter(food_or_drink == "Yes") %>%
+    summarise(mean_consumption_refreshment = mean(extent_of_refreshment, na.rm = TRUE))
+  
+  paste0("On average, if people used devices, they feel ",round(average_device_refreshment_, 1), " / 5 refreshed")
+  
+  
+    paste0("On average, if people did physical activities, they feel ",round(mean_physical_activity_refreshment, 1), " / 5 refreshed")
+  
+      paste0("On average, if people consumed food / drinks, they feel ",round(mean_consumption_refreshment, 1), " / 5 refreshed")
+  
+    
+```
+
+Hope that answers your question :)
+
+And now, it's time to
+
+![](https://lh7-rt.googleusercontent.com/formsz/AN7BsVDZxwgbVTbHWSUshZwXf6BqPrCl_oRbDVy6_HWl0h2d2K-Ag4dT0Vpc7iSvybkh4_75nJniHfix_gfYDXRtwswMindZH9Xq2UaQvCTF7eWgbXHQPbPJHlUy-5L5vkBp80mCUi0x7kcZDfxfQIqn2WGwsigMCLgqoEXCSw?key=D4gF2Y8io-3iVmWvjUziKg)
