@@ -51,7 +51,9 @@ form_url <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-4ALIuD7LTPFVJz39
 
 logged_data <- read_csv(form_url) 
 
-print(logged_data) 
+logged_data %>% 
+  slice(1:10) %>%
+  print()
 
 #renaming the variables & creating a new data frame
 latest_data <- logged_data %>%
@@ -71,7 +73,7 @@ latest_data <- logged_data %>%
 
 Well, let's see below.
 
-```{r, echo=F, fig.width = 6.6, fig.height=4}
+```{r, echo=F, fig.width = 5.5, fig.height=4}
 
   ggplot(latest_data) +
     geom_bar(aes(x = extent_of_refreshment, fill = device_use)) + 
@@ -167,3 +169,4 @@ Hope that answers your question :)
 And now, it's time to
 
 ![](https://lh7-rt.googleusercontent.com/formsz/AN7BsVDZxwgbVTbHWSUshZwXf6BqPrCl_oRbDVy6_HWl0h2d2K-Ag4dT0Vpc7iSvybkh4_75nJniHfix_gfYDXRtwswMindZH9Xq2UaQvCTF7eWgbXHQPbPJHlUy-5L5vkBp80mCUi0x7kcZDfxfQIqn2WGwsigMCLgqoEXCSw?key=D4gF2Y8io-3iVmWvjUziKg)
+
